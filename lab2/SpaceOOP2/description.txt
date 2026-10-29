@@ -1,0 +1,91 @@
+Предметная область: Космос.
+
+Программа является развитием первой лабораторной работы и моделирует
+объекты Солнечной системы через консольное меню. Предметная область
+не изменилась: звезда, планеты и спутники, звёздная система, орбиты,
+космическая миссия, астрономический каталог и расчёт расстояний.
+
+Основное отличие второй лабораторной — использование обобщений.
+
+1. Собственная обобщённая коллекция
+
+Класс SpaceCollection<T> реализует собственную коллекцию на основе
+массива и поддерживает:
+
+    ICollection<T>
+    IReadOnlyList<T>
+    IEnumerable<T> (вместе с IEnumerator<T>)
+    ICloneable
+    ISpaceReader<T>
+
+Коллекция умеет добавлять, удалять и искать элементы, копировать их
+в массив (CopyTo), очищаться, клонироваться и перечисляться в foreach.
+Внутренний массив автоматически расширяется при добавлении элементов.
+
+2. Ограничение обобщения
+
+Для коллекции задано ограничение:
+
+    public class SpaceCollection<T> where T : CelestialBody
+
+Оно не позволяет хранить в коллекции объекты, не являющиеся
+космическими телами предметной области. Такое же ограничение
+используется в обобщённом методе StarSystem.GetObjectsOfType<T>().
+
+3. Ковариантность
+
+Ковариантный интерфейс:
+
+    public interface ISpaceReader<out T>
+    {
+        int Count { get; }
+        T this[int index] { get; }
+        IEnumerable<T> Items { get; }
+    }
+
+Ключевое слово out показывает, что T используется только в позиции
+результата. Поэтому ссылку ISpaceReader<Planet> можно присвоить
+переменной ISpaceReader<CelestialBody>. Аналогично работает стандартный
+ковариантный интерфейс IEnumerable<out T>:
+
+    IEnumerable<Planet> planets = ...;
+    IEnumerable<CelestialBody> bodies = planets;
+
+4. Контравариантность
+
+Контравариантный интерфейс:
+
+    public interface ISpaceVisitor<in T>
+    {
+        void Visit(T item);
+    }
+
+Ключевое слово in показывает, что T используется только в позиции
+параметра. Поэтому объект, который умеет обрабатывать любое
+CelestialBody, можно использовать там, где требуется обработчик Planet:
+
+    ISpaceVisitor<CelestialBody> bodyVisitor = new SpaceInfoPrinter();
+    ISpaceVisitor<Planet> planetVisitor = bodyVisitor;
+
+Контравариантность также показана на стандартных интерфейсах
+IComparer<in T> и делегате Action<in T>.
+
+5. Внедрение в проект
+
+Класс StarSystem теперь хранит космические тела в
+SpaceCollection<CelestialBody> вместо List<CelestialBody>.
+Методы GetPlanets() и GetSatellites() используют обобщённый метод
+GetObjectsOfType<T>() и возвращают SpaceCollection<Planet> и
+SpaceCollection<Satellite>.
+
+6. Демонстрация
+
+Пункт меню "10. Обобщённая коллекция и вариативность" позволяет:
+
+    1) вывести содержимое SpaceCollection<CelestialBody>;
+    2) показать работу ICloneable (клон не зависит от оригинала);
+    3) продемонстрировать ковариантность ISpaceReader<out T>
+       и IEnumerable<out T>;
+    4) продемонстрировать контравариантность ISpaceVisitor<in T>
+       и Action<in T>;
+    5) отсортировать планеты через IComparer<in T>.

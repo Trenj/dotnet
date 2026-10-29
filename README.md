@@ -87,3 +87,44 @@ CelestialBody (abstract)
 - `DistanceCalculator` считает расстояние между планетами
 - `Orbit` описывает орбитальные характеристики объекта
 - `SpaceMission` моделирует миссию между двумя объектами
+
+## Лабораторная 2 — обобщения (generics)
+
+Вторая лабораторная развивает ту же предметную область: добавлена
+собственная обобщённая коллекция и продемонстрирована вариативность
+обобщённых интерфейсов.
+
+```bash
+dotnet run --project lab2/SpaceOOP2
+```
+
+### Что реализовано
+
+- `SpaceCollection<T>` — собственная коллекция на массиве, реализует
+  `ICollection<T>`, `IReadOnlyList<T>`, `IEnumerable<T>`, `IEnumerator<T>`
+  и `ICloneable`
+- ограничение обобщения: `where T : CelestialBody`
+- ковариантность: `ISpaceReader<out T>`, а также стандартный
+  `IEnumerable<out T>`
+- контравариантность: `ISpaceVisitor<in T>`, стандартные
+  `IComparer<in T>` и `Action<in T>`
+- `StarSystem` хранит тела в `SpaceCollection<CelestialBody>` и использует
+  обобщённый метод `GetObjectsOfType<T>() where T : CelestialBody`
+- пункт меню `10` демонстрирует коллекцию, клонирование, ковариантность,
+  контравариантность и сортировку через `IComparer<in T>`
+
+```
+lab2/
+└── SpaceOOP2/
+    ├── Collections/
+    │   ├── SpaceCollection.cs        # Обобщённая коллекция
+    │   ├── ISpaceReader.cs           # Ковариантный интерфейс (out T)
+    │   ├── ISpaceVisitor.cs          # Контравариантный интерфейс (in T)
+    │   ├── SpaceInfoPrinter.cs       # Реализация ISpaceVisitor
+    │   └── CelestialBodyComparer.cs  # IComparer<in T>
+    ├── Models/                       # Иерархия космических тел
+    ├── Systems/                      # Звёздная система и орбиты
+    ├── Services/                     # Каталог и расчёт расстояний
+    ├── Program.cs                    # Консольное меню и демонстрации
+    └── description.txt               # Описание проекта и обобщений
+```
