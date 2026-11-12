@@ -6,20 +6,25 @@ using SpaceOOP2.Systems;
 // ================================
 // ДАННЫЕ: СОЛНЕЧНАЯ СИСТЕМА
 // ================================
+// Это код верхнего уровня (top-level statements): точка входа программы.
+// Здесь создаются объекты предметной области, с которыми работает меню.
 
 StarSystem solarSystem = new("Солнечная система");
 
+// Порядок добавления: звезда, планеты, спутник
 solarSystem.AddObject(new Star("Солнце", 1.989e30, 696340, 5778, "G2V"));
 solarSystem.AddObject(new Planet("Меркурий", 3.301e23, 2439.7, 57.9, 87.97, false));
 solarSystem.AddObject(new Planet("Земля", 5.972e24, 6371, 149.6, 365.25, true));
 solarSystem.AddObject(new Planet("Марс", 6.417e23, 3389.5, 227.9, 687, true));
 solarSystem.AddObject(new Satellite("Луна", 7.342e22, 1737.4, "Земля", 0.384, 27.3));
 
+// Каталог заполняется теми же телами, что есть в системе
 AstronomicalCatalog catalog = new();
 foreach (CelestialBody body in solarSystem.Objects)
     catalog.Add(body);
 
 DistanceCalculator calculator = new();
+// Заранее созданная миссия Земля -> Марс (пункт меню 8)
 SpaceMission mission = new("Mars Exploration", solarSystem.FindObject("Земля")!, solarSystem.FindObject("Марс")!);
 
 // ================================
@@ -43,7 +48,7 @@ while (running)
         case "7": ShowAllOrbits(solarSystem); break;
         case "8": ManageMission(mission); break;
         case "9": ShowCatalog(catalog); break;
-        case "10": ManageGenerics(solarSystem); break;
+        case "10": ManageGenerics(solarSystem); break; // демонстрация обобщений
         case "0": running = false; Console.WriteLine("Программа завершена."); continue;
         default: Console.WriteLine("Ошибка: такого пункта меню нет."); break;
     }
@@ -54,6 +59,8 @@ while (running)
 // ================================
 // КОНСОЛЬНЫЙ ИНТЕРФЕЙС
 // ================================
+// Ниже — локальные статические функции (объявлены прямо в файле
+// с кодом верхнего уровня). Каждая обслуживает один пункт меню.
 
 static void ShowMenu()
 {
@@ -77,11 +84,13 @@ static void ShowMenu()
 static void FindObject(StarSystem system)
 {
     CelestialBody? body = ReadBody(system, "Введите название объекта: ");
+    // ?. — вызов ShowInfo() только если body не null
     body?.ShowInfo();
 }
 
 static void ShowPlanets(StarSystem system)
 {
+    // Обобщённый метод: из всех тел системы отбираются только планеты
     SpaceCollection<Planet> planets = system.GetPlanets();
 
     Console.WriteLine("=== ПЛАНЕТЫ ===\n");
@@ -116,6 +125,7 @@ static void ShowDistance(StarSystem system, DistanceCalculator calculator)
     }
     catch (ArgumentException exception)
     {
+        // Сюда попадём, если одно из тел — не планета (см. DistanceCalculator)
         Console.WriteLine($"Ошибка: {exception.Message}");
     }
 }
@@ -125,6 +135,8 @@ static void ShowOrbitInfo(StarSystem system)
     CelestialBody? body = ReadBody(system, "Введите название объекта: ");
     if (body == null) return;
 
+    // Орбита есть только у объектов, реализующих IOrbitalObject
+    // (у планет и спутников; у звезды — нет).
     if (body is IOrbitalObject orbital)
         orbital.ShowOrbitInfo();
     else
@@ -184,11 +196,13 @@ static void ManageMission(SpaceMission mission)
 }
 
 // ================================
-// ДЕМОНСТРАЦИЯ ОБОБЩЕНИЙ
+// ДЕМОНСТРАЦИЯ ОБОБЩЕНИЙ (предмет 2-й лабораторной)
 // ================================
 
 static void ManageGenerics(StarSystem system)
 {
+    // Работаем с КЛОНОМ коллекции тел, чтобы демонстрации
+    // (например, удаление при клонировании) не портили саму систему.
     SpaceCollection<CelestialBody> collection = system.CloneBodies();
     bool inMenu = true;
 
@@ -220,15 +234,20 @@ static void ManageGenerics(StarSystem system)
     }
 }
 
+// Показывает, что наша коллекция работает как обычная: Count, foreach,
+// индексатор, CopyTo. Ограничение where T : CelestialBody проверяется
+// компилятором — SpaceCollection<string> просто не соберётся.
 static void ShowGenericCollection(SpaceCollection<CelestialBody> collection)
 {
     Console.WriteLine("=== SpaceCollection<CelestialBody> ===\n");
     Console.WriteLine($"Тип коллекции: {collection.GetType().Name}");
     Console.WriteLine($"Количество элементов: {collection.Count}\n");
 
+    // foreach возможен благодаря реализации IEnumerable<T>
     foreach (CelestialBody body in collection)
         Console.WriteLine($"- {body.GetType().Name}: {body.Name}");
 
+    // CopyTo — метод из ICollection<T>
     CelestialBody[] copy = new CelestialBody[collection.Count];
     collection.CopyTo(copy, 0);
 
@@ -236,8 +255,10 @@ static void ShowGenericCollection(SpaceCollection<CelestialBody> collection)
     Console.WriteLine($"Ограничение where T : CelestialBody не позволяет хранить посторонние типы.");
 }
 
+// Демонстрация ICloneable: клон — независимая копия коллекции.
 static void ShowCloneDemo(SpaceCollection<CelestialBody> collection)
 {
+    // Clone() возвращает object, поэтому нужно явное приведение типа
     SpaceCollection<CelestialBody> original = (SpaceCollection<CelestialBody>)collection.Clone();
     SpaceCollection<CelestialBody> clone = (SpaceCollection<CelestialBody>)original.Clone();
 
@@ -245,6 +266,7 @@ static void ShowCloneDemo(SpaceCollection<CelestialBody> collection)
     Console.WriteLine($"Оригинал до удаления: {original.Count} элементов.");
     Console.WriteLine($"Клон: {clone.Count} элементов.");
 
+    // Удаляем элемент из оригинала — в клоне он должен остаться
     if (original.Count > 0)
         original.RemoveAt(0);
 
@@ -253,13 +275,19 @@ static void ShowCloneDemo(SpaceCollection<CelestialBody> collection)
     Console.WriteLine("\nКлон независим: удаление из оригинала не изменило копию.");
 }
 
+// КОВАРИАНТНОСТЬ (out T): присваивание «от частного к общему».
 static void ShowCovarianceDemo(StarSystem system)
 {
     SpaceCollection<Planet> planets = system.GetPlanets();
 
+    // 1) Наш ковариантный интерфейс ISpaceReader<out T>:
     ISpaceReader<Planet> planetReader = planets;
+    // Planet — это CelestialBody, поэтому «читатель планет» можно
+    // использовать как «читатель любых тел». Без out такая строка
+    // не скомпилировалась бы.
     ISpaceReader<CelestialBody> bodyReader = planetReader;
 
+    // 2) Стандартный ковариантный интерфейс IEnumerable<out T>:
     IEnumerable<Planet> planetSequence = planets;
     IEnumerable<CelestialBody> bodySequence = planetSequence;
 
@@ -269,13 +297,18 @@ static void ShowCovarianceDemo(StarSystem system)
     Console.WriteLine($"Тел через ISpaceReader<CelestialBody>: {bodyReader.Count}\n");
 
     Console.WriteLine("IEnumerable<Planet> -> IEnumerable<CelestialBody>");
+    // Перебираем планет через переменную типа IEnumerable<CelestialBody>
     foreach (CelestialBody body in bodySequence)
         Console.WriteLine($"- {body.Name}");
 }
 
+// КОНТРАВАРИАНТНОСТЬ (in T): присваивание «от общего к частному».
 static void ShowContravarianceDemo(StarSystem system)
 {
+    // 1) Наш контравариантный интерфейс ISpaceVisitor<in T>:
     ISpaceVisitor<CelestialBody> bodyVisitor = new SpaceInfoPrinter();
+    // Посетитель умеет обрабатывать ЛЮБОЕ тело, значит, подойдёт и там,
+    // где нужен обработчик именно планет. Без in — ошибка компиляции.
     ISpaceVisitor<Planet> planetVisitor = bodyVisitor;
 
     Console.WriteLine("=== КОНТРАВАРИАНТНОСТЬ (in T) ===\n");
@@ -288,8 +321,13 @@ static void ShowContravarianceDemo(StarSystem system)
         return;
     }
 
+    // Вызываем Visit через ссылку ISpaceVisitor<Planet>,
+    // хотя объект создан как ISpaceVisitor<CelestialBody>
     planetVisitor.Visit(planets[0]);
 
+    // 2) Контравариантность стандартного делегата Action<in T>:
+    // делегат, принимающий CelestialBody, можно использовать как
+    // делегат, принимающий Planet.
     Action<CelestialBody> bodyAction = body => Console.WriteLine($"Action<CelestialBody>: {body.Name}");
     Action<Planet> planetAction = bodyAction;
 
@@ -297,15 +335,18 @@ static void ShowContravarianceDemo(StarSystem system)
     planetAction(planets[0]);
 }
 
+// Контравариантность стандартного IComparer<in T> на примере сортировки.
 static void ShowComparerDemo(StarSystem system)
 {
     SpaceCollection<Planet> planets = system.GetPlanets();
-    List<Planet> sorted = planets.ToList();
+    List<Planet> sorted = planets.ToList(); // копия в List, т.к. Sort есть у List<T>
 
+    // Сравниватель создан для CelestialBody...
     IComparer<CelestialBody> bodyComparer = new CelestialBodyComparer();
+    // ...но благодаря in T подходит и для сортировки планет
     IComparer<Planet> planetComparer = bodyComparer;
 
-    sorted.Sort(planetComparer);
+    sorted.Sort(planetComparer); // сортировка по массе (см. CelestialBodyComparer)
 
     Console.WriteLine("=== IComparer<in T> ===\n");
     Console.WriteLine("IComparer<CelestialBody> -> IComparer<Planet>\n");
@@ -319,12 +360,15 @@ static void ShowComparerDemo(StarSystem system)
 // ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ
 // ================================
 
+// Читает строку из консоли и убирает пробелы по краям.
 static string ReadInput(string prompt)
 {
     Console.Write(prompt);
     return (Console.ReadLine() ?? string.Empty).Trim();
 }
 
+// Запрашивает название и ищет тело в системе.
+// Возвращает null (с сообщением), если ввод пуст или объект не найден.
 static CelestialBody? ReadBody(StarSystem system, string prompt)
 {
     string name = ReadInput(prompt);

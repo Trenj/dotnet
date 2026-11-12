@@ -1,15 +1,21 @@
 namespace SpaceOOP2.Models;
 
+/// <summary>
+/// Планета — наследник CelestialBody, реализует IOrbitalObject,
+/// т.к. у планеты есть орбита вокруг звезды.
+/// </summary>
 public class Planet : CelestialBody, IOrbitalObject
 {
-    public double DistanceFromStar { get; }
+    public double DistanceFromStar { get; } // расстояние до звезды, млн км
 
-    public double OrbitalPeriod { get; }
+    public double OrbitalPeriod { get; } // период обращения, дни (из IOrbitalObject)
 
     public bool HasAtmosphere { get; }
 
+    // Радиус орбиты для интерфейса — это и есть расстояние до звезды.
     public double OrbitRadius => DistanceFromStar;
 
+    // base(...) передаёт общие характеристики в конструктор CelestialBody.
     public Planet(
         string name,
         double mass,
@@ -24,6 +30,7 @@ public class Planet : CelestialBody, IOrbitalObject
         HasAtmosphere = hasAtmosphere;
     }
 
+    // override — своя реализация абстрактного метода базового класса.
     public override void ShowInfo()
     {
         ShowCommonInfo("Планета");
@@ -32,6 +39,7 @@ public class Planet : CelestialBody, IOrbitalObject
         Console.WriteLine($"Атмосфера: {(HasAtmosphere ? "есть" : "нет")}");
     }
 
+    // Реализация интерфейса IOrbitalObject.
     public void ShowOrbitInfo()
     {
         Console.WriteLine($"Планета {Name} совершает полный оборот за {OrbitalPeriod:N2} дней.");

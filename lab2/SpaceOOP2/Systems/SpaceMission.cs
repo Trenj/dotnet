@@ -2,6 +2,11 @@ using SpaceOOP2.Models;
 
 namespace SpaceOOP2.Systems;
 
+/// <summary>
+/// Космическая миссия между двумя телами системы.
+/// Пример инкапсуляции: Status имеет private set — снаружи статус
+/// можно только читать, меняется он только через Start() и Complete().
+/// </summary>
 public class SpaceMission
 {
     public string Name { get; }

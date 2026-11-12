@@ -1,10 +1,14 @@
 namespace SpaceOOP2.Models;
 
+/// <summary>
+/// Звезда — наследник CelestialBody. Интерфейс IOrbitalObject не реализует,
+/// т.к. звезда — центр системы и ни вокруг чего не обращается.
+/// </summary>
 public class Star : CelestialBody
 {
-    public double Temperature { get; }
+    public double Temperature { get; } // температура поверхности, К
 
-    public string SpectralClass { get; }
+    public string SpectralClass { get; } // спектральный класс (например, G2V у Солнца)
 
     public Star(string name, double mass, double radius, double temperature, string spectralClass)
         : base(name, mass, radius)
