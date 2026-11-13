@@ -260,21 +260,28 @@ static void ShowGenericCollection(SpaceCollection<CelestialBody> collection)
 }
 
 // Демонстрация ICloneable: клон: независимая по составу копия коллекции.
+// Переданная коллекция НЕ изменяется: эксперимент идёт только с её копиями,
+// поэтому повторные заходы в этот пункт не уменьшают рабочую копию меню 10.
 static void ShowCloneDemo(SpaceCollection<CelestialBody> collection)
 {
-    // Ровно одно клонирование. Clone() возвращает object, нужно приведение.
-    var clone = (SpaceCollection<CelestialBody>)collection.Clone();
+    // Две независимые копии: "оригинал" для эксперимента и его клон.
+    // Clone() возвращает object, нужно явное приведение типа.
+    var original = (SpaceCollection<CelestialBody>)collection.Clone();
+    var clone = (SpaceCollection<CelestialBody>)original.Clone();
 
     Console.WriteLine("=== ICloneable ===\n");
-    Console.WriteLine($"Оригинал до удаления: {collection.Count} элементов.");
+    Console.WriteLine($"Переданная коллекция: {collection.Count} элементов.");
+    Console.WriteLine($"Оригинал до удаления: {original.Count} элементов.");
     Console.WriteLine($"Клон до удаления: {clone.Count} элементов.");
 
-    // Удаляем первый элемент из ОРИГИНАЛА: в клоне он должен остаться
-    if (collection.Count > 0)
-        collection.RemoveAt(0);
+    // Удаляем первый элемент из ОРИГИНАЛА: в клоне он должен остаться,
+    // а переданная коллекция (collection) вообще не участвует в эксперименте.
+    if (original.Count > 0)
+        original.RemoveAt(0);
 
-    Console.WriteLine($"Оригинал после удаления: {collection.Count} элементов.");
+    Console.WriteLine($"Оригинал после удаления: {original.Count} элементов.");
     Console.WriteLine($"Клон после изменения оригинала: {clone.Count} элементов.");
+    Console.WriteLine($"Переданная коллекция после демо: {collection.Count} элементов (не изменилась).");
     Console.WriteLine("\nКлон независим по составу: удаление из оригинала не изменило копию.");
     Console.WriteLine("Клон поверхностный: объекты-тела общие, независим только состав коллекции.");
 }
