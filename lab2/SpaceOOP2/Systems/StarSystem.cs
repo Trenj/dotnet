@@ -4,25 +4,27 @@ using SpaceOOP2.Models;
 namespace SpaceOOP2.Systems;
 
 /// <summary>
-/// Звёздная система — центральный класс предметной области.
+/// Звёздная система: центральный класс предметной области.
 ///
 /// ГЛАВНОЕ ОТЛИЧИЕ ОТ ПЕРВОЙ ЛАБОРАТОРНОЙ: тела хранятся не в
 /// List&lt;CelestialBody&gt;, а в нашей собственной обобщённой коллекции
-/// SpaceCollection&lt;CelestialBody&gt; — так коллекция «внедрена в проект».
+/// SpaceCollection&lt;CelestialBody&gt;: так коллекция «внедрена в проект».
 /// </summary>
 public class StarSystem
 {
     // Собственная обобщённая коллекция вместо стандартного List<T>.
-    // T = CelestialBody — можно хранить звёзды, планеты и спутники вместе.
+    // T = CelestialBody: можно хранить звёзды, планеты и спутники вместе.
     private readonly SpaceCollection<CelestialBody> bodies = new();
 
     public string Name { get; }
 
     public int ObjectCount => bodies.Count;
 
-    // Наружу отдаём коллекцию как IReadOnlyList — читать можно,
-    // а изменять состав системы снаружи нельзя (только через AddObject/RemoveObject).
-    public IReadOnlyList<CelestialBody> Objects => bodies;
+    // Наружу отдаём не саму коллекцию, а защитную копию только для чтения:
+    // bodies.ToArray() создаёт новый массив, Array.AsReadOnly оборачивает
+    // его в ReadOnlyCollection. Привести результат обратно к SpaceCollection
+    // и изменить систему снаружи уже нельзя.
+    public IReadOnlyList<CelestialBody> Objects => Array.AsReadOnly(bodies.ToArray());
 
     public StarSystem(string name)
     {
@@ -76,7 +78,7 @@ public class StarSystem
 
         foreach (CelestialBody body in bodies)
         {
-            // Проверка типа «is» + приведение: если тело нужного типа — добавляем
+            // Проверка типа «is» + приведение: если тело нужного типа, добавляем
             if (body is TResult typed)
                 result.Add(typed);
         }
@@ -89,15 +91,17 @@ public class StarSystem
 
     public SpaceCollection<Satellite> GetSatellites() => GetObjectsOfType<Satellite>();
 
-    // Строит список орбит всех тел, реализующих IOrbitalObject.
-    // OfType<T>() — стандартный обобщённый LINQ-метод: оставляет только
-    // элементы указанного типа (здесь — только «орбитальные» объекты).
+    // Возвращает List<Orbit>, а не SpaceCollection<Orbit>, потому что Orbit
+    // не является космическим телом и не проходит ограничение
+    // where T : CelestialBody нашей коллекции.
+    // OfType<T>() здесь: стандартный обобщённый LINQ-метод, оставляет только
+    // элементы указанного типа (только «орбитальные» объекты).
     public List<Orbit> GetOrbits() =>
         bodies.OfType<IOrbitalObject>()
               .Select(o => new Orbit((CelestialBody)o, o.OrbitRadius, o.OrbitalPeriod))
               .ToList();
 
-    // Клон коллекции тел — используется в демонстрации ICloneable (пункт меню 10).
+    // Клон коллекции тел: используется в демонстрации ICloneable (пункт меню 10).
     public SpaceCollection<CelestialBody> CloneBodies() =>
         (SpaceCollection<CelestialBody>)bodies.Clone();
 }

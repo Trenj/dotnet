@@ -1,7 +1,7 @@
 namespace SpaceOOP2.Models;
 
 /// <summary>
-/// Спутник — наследник CelestialBody, реализует IOrbitalObject,
+/// Спутник - наследник CelestialBody, реализует IOrbitalObject,
 /// т.к. спутник обращается вокруг родительского тела (планеты).
 /// </summary>
 public class Satellite : CelestialBody, IOrbitalObject
@@ -12,7 +12,7 @@ public class Satellite : CelestialBody, IOrbitalObject
 
     public double OrbitalPeriod { get; } // период обращения, дни (из IOrbitalObject)
 
-    // Радиус орбиты для интерфейса — расстояние до родительского тела.
+    // Радиус орбиты для интерфейса - расстояние до родительского тела.
     public double OrbitRadius => DistanceFromParent;
 
     public Satellite(

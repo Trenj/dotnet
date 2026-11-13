@@ -1,8 +1,8 @@
 namespace SpaceOOP2.Models;
 
 /// <summary>
-/// Звезда — наследник CelestialBody. Интерфейс IOrbitalObject не реализует,
-/// т.к. звезда — центр системы и ни вокруг чего не обращается.
+/// Звезда - наследник CelestialBody. Интерфейс IOrbitalObject не реализует,
+/// т.к. звезда - центр системы и ни вокруг чего не обращается.
 /// </summary>
 public class Star : CelestialBody
 {

@@ -11,7 +11,7 @@ public class DistanceCalculator
     public double CalculateDistance(CelestialBody first, CelestialBody second)
     {
         // Паттерн «is not Planet firstPlanet»: если хотя бы одно тело
-        // не планета — расчёт не имеет смысла, бросаем исключение.
+        // не планета - расчёт не имеет смысла, бросаем исключение.
         if (first is not Planet firstPlanet || second is not Planet secondPlanet)
             throw new ArgumentException("Расстояние можно рассчитать только между планетами.");
 

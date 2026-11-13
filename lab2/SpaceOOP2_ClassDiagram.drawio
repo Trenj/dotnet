@@ -1,0 +1,13 @@
+<mxfile host="app.diagrams.net" agent="opencode" version="24.7.5">
+  <diagram id="spaceoop2-class-diagram" name="SpaceOOP2 Class Diagram">
+    <mxGraphModel dx="800" dy="500" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="placeholder" value="Заглушка: диаграмма классов lab2 (SpaceOOP2). Файл будет заменён готовой диаграммой." style="text;html=1;align=center;verticalAlign=middle;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="120" y="120" width="600" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

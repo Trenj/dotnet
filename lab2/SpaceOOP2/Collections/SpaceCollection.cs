@@ -8,22 +8,22 @@ namespace SpaceOOP2.Collections;
 /// написанный вручную на основе массива).
 ///
 /// Что здесь демонстрируется:
-///   1. Обобщённый класс: SpaceCollection&lt;T&gt; — один и тот же код работает
+///   1. Обобщённый класс: SpaceCollection&lt;T&gt; - один и тот же код работает
 ///      с любым типом T (Planet, Satellite, CelestialBody и т.д.).
-///   2. Ограничение обобщения: where T : CelestialBody — коллекция может
+///   2. Ограничение обобщения: where T : CelestialBody - коллекция может
 ///      хранить только космические тела, попытка написать SpaceCollection&lt;string&gt;
 ///      не скомпилируется.
 ///   3. Реализация стандартных интерфейсов .NET:
-///        ICollection&lt;T&gt;    — Add / Remove / Clear / Contains / CopyTo / Count;
-///        IReadOnlyList&lt;T&gt;  — Count + индексатор (доступ по номеру элемента);
-///        IEnumerable&lt;T&gt;    — позволяет перебирать коллекцию в foreach;
-///        ICloneable        — метод Clone() создаёт копию коллекции;
-///        ISpaceReader&lt;T&gt;  — наш собственный ковариантный интерфейс.
+///        ICollection&lt;T&gt;    - Add / Remove / Clear / Contains / CopyTo / Count;
+///        IReadOnlyList&lt;T&gt;  - Count + индексатор (доступ по номеру элемента);
+///        IEnumerable&lt;T&gt;    - позволяет перебирать коллекцию в foreach;
+///        ICloneable        - метод Clone() создаёт копию коллекции;
+///        ISpaceReader&lt;T&gt;  - наш собственный ковариантный интерфейс.
 /// </summary>
 public class SpaceCollection<T> : ICollection<T>, IReadOnlyList<T>, ICloneable, ISpaceReader<T>
     where T : CelestialBody
 {
-    // Внутреннее хранилище — обычный массив элементов типа T.
+    // Внутреннее хранилище - обычный массив элементов типа T.
     // Массив почти всегда больше, чем реальное число элементов (запас на рост).
     private T[] items;
 
@@ -55,14 +55,14 @@ public class SpaceCollection<T> : ICollection<T>, IReadOnlyList<T>, ICloneable, 
     // Количество элементов в коллекции (требование ICollection<T>).
     public int Count => count;
 
-    // false — коллекцию можно изменять (требование ICollection<T>).
+    // false - коллекцию можно изменять (требование ICollection<T>).
     public bool IsReadOnly => false;
 
     // Свойство из нашего интерфейса ISpaceReader<T>: отдаём коллекцию
     // как перечисление. this подходит, т.к. мы реализуем IEnumerable<T>.
     public IEnumerable<T> Items => this;
 
-    // Индексатор — доступ к элементу по номеру: collection[0], collection[1]...
+    // Индексатор - доступ к элементу по номеру: collection[0], collection[1]...
     // Геттер требуется IReadOnlyList<T> и ISpaceReader<T>, сеттер добавлен для удобства.
     public T this[int index]
     {
@@ -148,12 +148,12 @@ public class SpaceCollection<T> : ICollection<T>, IReadOnlyList<T>, ICloneable, 
             yield return items[i];
     }
 
-    // Необобщённая версия GetEnumerator — требование старого интерфейса IEnumerable.
+    // Необобщённая версия GetEnumerator - требование старого интерфейса IEnumerable.
     // Просто перенаправляем на обобщённую версию.
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     // Создаёт копию коллекции (требование ICloneable).
-    // Важно: это ПОВЕРХНОСТНОЕ копирование — копируется массив ссылок,
+    // Важно: это ПОВЕРХНОСТНОЕ копирование - копируется массив ссылок,
     // а сами объекты CelestialBody остаются общими для оригинала и копии.
     // Независимость копии в том, что Add/Remove в одной коллекции
     // не меняют другую.

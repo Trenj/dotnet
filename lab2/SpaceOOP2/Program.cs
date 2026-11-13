@@ -18,7 +18,9 @@ solarSystem.AddObject(new Planet("Земля", 5.972e24, 6371, 149.6, 365.25, tr
 solarSystem.AddObject(new Planet("Марс", 6.417e23, 3389.5, 227.9, 687, true));
 solarSystem.AddObject(new Satellite("Луна", 7.342e22, 1737.4, "Земля", 0.384, 27.3));
 
-// Каталог заполняется теми же телами, что есть в системе
+// Каталог заполняется теми же телами, что есть в системе.
+// solarSystem.Objects: доступ только для чтения, изменить систему
+// через это свойство нельзя.
 AstronomicalCatalog catalog = new();
 foreach (CelestialBody body in solarSystem.Objects)
     catalog.Add(body);
@@ -59,7 +61,7 @@ while (running)
 // ================================
 // КОНСОЛЬНЫЙ ИНТЕРФЕЙС
 // ================================
-// Ниже — локальные статические функции (объявлены прямо в файле
+// Ниже: локальные статические функции (объявлены прямо в файле
 // с кодом верхнего уровня). Каждая обслуживает один пункт меню.
 
 static void ShowMenu()
@@ -84,7 +86,7 @@ static void ShowMenu()
 static void FindObject(StarSystem system)
 {
     CelestialBody? body = ReadBody(system, "Введите название объекта: ");
-    // ?. — вызов ShowInfo() только если body не null
+    // ?. : вызов ShowInfo() только если body не null
     body?.ShowInfo();
 }
 
@@ -125,7 +127,7 @@ static void ShowDistance(StarSystem system, DistanceCalculator calculator)
     }
     catch (ArgumentException exception)
     {
-        // Сюда попадём, если одно из тел — не планета (см. DistanceCalculator)
+        // Сюда попадём, если одно из тел: не планета (см. DistanceCalculator)
         Console.WriteLine($"Ошибка: {exception.Message}");
     }
 }
@@ -136,7 +138,7 @@ static void ShowOrbitInfo(StarSystem system)
     if (body == null) return;
 
     // Орбита есть только у объектов, реализующих IOrbitalObject
-    // (у планет и спутников; у звезды — нет).
+    // (у планет и спутников; у звезды: нет).
     if (body is IOrbitalObject orbital)
         orbital.ShowOrbitInfo();
     else
@@ -145,6 +147,8 @@ static void ShowOrbitInfo(StarSystem system)
 
 static void ShowAllOrbits(StarSystem system)
 {
+    // GetOrbits возвращает List<Orbit>: Orbit не является CelestialBody,
+    // поэтому в SpaceCollection его положить нельзя (см. комментарий в StarSystem).
     List<Orbit> orbits = system.GetOrbits();
 
     Console.WriteLine("=== ОРБИТЫ ОБЪЕКТОВ ===\n");
@@ -236,7 +240,7 @@ static void ManageGenerics(StarSystem system)
 
 // Показывает, что наша коллекция работает как обычная: Count, foreach,
 // индексатор, CopyTo. Ограничение where T : CelestialBody проверяется
-// компилятором — SpaceCollection<string> просто не соберётся.
+// компилятором: SpaceCollection<string> просто не соберётся.
 static void ShowGenericCollection(SpaceCollection<CelestialBody> collection)
 {
     Console.WriteLine("=== SpaceCollection<CelestialBody> ===\n");
@@ -247,7 +251,7 @@ static void ShowGenericCollection(SpaceCollection<CelestialBody> collection)
     foreach (CelestialBody body in collection)
         Console.WriteLine($"- {body.GetType().Name}: {body.Name}");
 
-    // CopyTo — метод из ICollection<T>
+    // CopyTo: метод из ICollection<T>
     CelestialBody[] copy = new CelestialBody[collection.Count];
     collection.CopyTo(copy, 0);
 
@@ -255,24 +259,24 @@ static void ShowGenericCollection(SpaceCollection<CelestialBody> collection)
     Console.WriteLine($"Ограничение where T : CelestialBody не позволяет хранить посторонние типы.");
 }
 
-// Демонстрация ICloneable: клон — независимая копия коллекции.
+// Демонстрация ICloneable: клон: независимая по составу копия коллекции.
 static void ShowCloneDemo(SpaceCollection<CelestialBody> collection)
 {
-    // Clone() возвращает object, поэтому нужно явное приведение типа
-    SpaceCollection<CelestialBody> original = (SpaceCollection<CelestialBody>)collection.Clone();
-    SpaceCollection<CelestialBody> clone = (SpaceCollection<CelestialBody>)original.Clone();
+    // Ровно одно клонирование. Clone() возвращает object, нужно приведение.
+    var clone = (SpaceCollection<CelestialBody>)collection.Clone();
 
     Console.WriteLine("=== ICloneable ===\n");
-    Console.WriteLine($"Оригинал до удаления: {original.Count} элементов.");
-    Console.WriteLine($"Клон: {clone.Count} элементов.");
+    Console.WriteLine($"Оригинал до удаления: {collection.Count} элементов.");
+    Console.WriteLine($"Клон до удаления: {clone.Count} элементов.");
 
-    // Удаляем элемент из оригинала — в клоне он должен остаться
-    if (original.Count > 0)
-        original.RemoveAt(0);
+    // Удаляем первый элемент из ОРИГИНАЛА: в клоне он должен остаться
+    if (collection.Count > 0)
+        collection.RemoveAt(0);
 
-    Console.WriteLine($"Оригинал после удаления: {original.Count} элементов.");
+    Console.WriteLine($"Оригинал после удаления: {collection.Count} элементов.");
     Console.WriteLine($"Клон после изменения оригинала: {clone.Count} элементов.");
-    Console.WriteLine("\nКлон независим: удаление из оригинала не изменило копию.");
+    Console.WriteLine("\nКлон независим по составу: удаление из оригинала не изменило копию.");
+    Console.WriteLine("Клон поверхностный: объекты-тела общие, независим только состав коллекции.");
 }
 
 // КОВАРИАНТНОСТЬ (out T): присваивание «от частного к общему».
@@ -282,7 +286,7 @@ static void ShowCovarianceDemo(StarSystem system)
 
     // 1) Наш ковариантный интерфейс ISpaceReader<out T>:
     ISpaceReader<Planet> planetReader = planets;
-    // Planet — это CelestialBody, поэтому «читатель планет» можно
+    // Planet: это CelestialBody, поэтому «читатель планет» можно
     // использовать как «читатель любых тел». Без out такая строка
     // не скомпилировалась бы.
     ISpaceReader<CelestialBody> bodyReader = planetReader;
@@ -308,7 +312,7 @@ static void ShowContravarianceDemo(StarSystem system)
     // 1) Наш контравариантный интерфейс ISpaceVisitor<in T>:
     ISpaceVisitor<CelestialBody> bodyVisitor = new SpaceInfoPrinter();
     // Посетитель умеет обрабатывать ЛЮБОЕ тело, значит, подойдёт и там,
-    // где нужен обработчик именно планет. Без in — ошибка компиляции.
+    // где нужен обработчик именно планет. Без in: ошибка компиляции.
     ISpaceVisitor<Planet> planetVisitor = bodyVisitor;
 
     Console.WriteLine("=== КОНТРАВАРИАНТНОСТЬ (in T) ===\n");

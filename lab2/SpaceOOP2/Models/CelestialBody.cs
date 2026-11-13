@@ -1,7 +1,7 @@
 namespace SpaceOOP2.Models;
 
 /// <summary>
-/// Абстрактный базовый класс космического тела — корень иерархии:
+/// Абстрактный базовый класс космического тела - корень иерархии:
 ///     CelestialBody
 ///     ├── Star
 ///     ├── Planet
@@ -10,7 +10,7 @@ namespace SpaceOOP2.Models;
 /// Именно он используется как ограничение where T : CelestialBody
 /// в обобщённой коллекции SpaceCollection&lt;T&gt;.
 ///
-/// Инкапсуляция: поле mass закрыто, доступ — через свойство Mass с проверкой.
+/// Инкапсуляция: поле mass закрыто, доступ - через свойство Mass с проверкой.
 /// </summary>
 public abstract class CelestialBody
 {
@@ -26,7 +26,7 @@ public abstract class CelestialBody
         get => mass;
         set
         {
-            // Проверка корректности — пример инкапсуляции:
+            // Проверка корректности - пример инкапсуляции:
             // класс не даёт записать в себя некорректные данные.
             if (value <= 0)
                 throw new ArgumentException("Масса должна быть больше нуля.");
@@ -35,12 +35,12 @@ public abstract class CelestialBody
         }
     }
 
-    // protected — конструктор доступен только наследникам,
+    // protected - конструктор доступен только наследникам,
     // создать «просто CelestialBody» нельзя (класс абстрактный).
     protected CelestialBody(string name, double mass, double radius)
     {
         Name = name;
-        Mass = mass; // присваиваем через свойство — сработает проверка
+        Mass = mass; // присваиваем через свойство - сработает проверка
         Radius = radius;
     }
 

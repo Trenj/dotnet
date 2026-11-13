@@ -5,7 +5,7 @@ namespace SpaceOOP2.Collections;
 /// <summary>
 /// Сравнение космических тел по массе (от лёгких к тяжёлым).
 ///
-/// IComparer&lt;in T&gt; — контравариантный интерфейс из стандартной библиотеки .NET.
+/// IComparer&lt;in T&gt; - контравариантный интерфейс из стандартной библиотеки .NET.
 /// Поэтому этот сравниватель (IComparer&lt;CelestialBody&gt;) можно передать
 /// в List&lt;Planet&gt;.Sort(), который ждёт IComparer&lt;Planet&gt;:
 /// сравниватель умеет сравнивать любые тела, значит, и планеты в частности.
@@ -24,7 +24,7 @@ public class CelestialBodyComparer : IComparer<CelestialBody>
         if (y is null)
             return 1;
 
-        // CompareTo у double сравнивает числа — используем его для массы
+        // CompareTo у double сравнивает числа - используем его для массы
         return x.Mass.CompareTo(y.Mass);
     }
 }

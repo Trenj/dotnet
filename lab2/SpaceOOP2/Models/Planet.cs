@@ -1,7 +1,7 @@
 namespace SpaceOOP2.Models;
 
 /// <summary>
-/// Планета — наследник CelestialBody, реализует IOrbitalObject,
+/// Планета - наследник CelestialBody, реализует IOrbitalObject,
 /// т.к. у планеты есть орбита вокруг звезды.
 /// </summary>
 public class Planet : CelestialBody, IOrbitalObject
@@ -12,7 +12,7 @@ public class Planet : CelestialBody, IOrbitalObject
 
     public bool HasAtmosphere { get; }
 
-    // Радиус орбиты для интерфейса — это и есть расстояние до звезды.
+    // Радиус орбиты для интерфейса - это и есть расстояние до звезды.
     public double OrbitRadius => DistanceFromStar;
 
     // base(...) передаёт общие характеристики в конструктор CelestialBody.
@@ -30,7 +30,7 @@ public class Planet : CelestialBody, IOrbitalObject
         HasAtmosphere = hasAtmosphere;
     }
 
-    // override — своя реализация абстрактного метода базового класса.
+    // override - своя реализация абстрактного метода базового класса.
     public override void ShowInfo()
     {
         ShowCommonInfo("Планета");

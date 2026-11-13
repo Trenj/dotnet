@@ -1,16 +1,21 @@
-# SpaceOOP — моделирование Солнечной системы
+# SpaceOOP: моделирование Солнечной системы
 
 Учебный проект на C# (.NET 8) по курсу «Технологии программирования на .NET»:
 моделирование звёздной системы и работа с космическими телами через
 консольное меню. Репозиторий содержит две практические работы:
 
-- **lab1/SpaceOOP** — основы ООП: наследование, инкапсуляция,
+- **lab1/SpaceOOP**: основы ООП: наследование, инкапсуляция,
   полиморфизм, интерфейсы
-- **lab2/SpaceOOP2** — обобщения (generics): собственная обобщённая
+- **lab2/SpaceOOP2**: обобщения (generics): собственная обобщённая
   коллекция, ограничения обобщений, ко- и контравариантность
 
 Весь код снабжён комментариями на русском языке, объясняющими ключевые
 приёмы (иерархия классов, работа коллекции, вариативность и т.д.).
+
+Диаграммы классов (draw.io):
+
+- лабораторная 1: `lab1/SpaceOOP_ClassDiagram.drawio`
+- лабораторная 2: `lab2/SpaceOOP2_ClassDiagram.drawio`
 
 ## Запуск
 
@@ -21,10 +26,16 @@ dotnet run --project lab1/SpaceOOP    # лабораторная 1
 dotnet run --project lab2/SpaceOOP2   # лабораторная 2
 ```
 
+Тесты второй лабораторной (xUnit):
+
+```bash
+dotnet test lab2/SpaceOOP2.Tests
+```
+
 Папки `bin/` и `obj/` не хранятся в репозитории (см. `.gitignore`) и
 создаются автоматически при сборке.
 
-## Лабораторная 1 — основы ООП
+## Лабораторная 1: основы ООП
 
 ### Возможности
 
@@ -40,6 +51,8 @@ dotnet run --project lab2/SpaceOOP2   # лабораторная 2
 
 ```
 lab1/
+├── Lab1.txt                   # Текст задания
+├── SpaceOOP_ClassDiagram.drawio # Диаграмма классов (draw.io)
 └── SpaceOOP/                  # Проект
     ├── Models/                # Иерархия космических тел
     │   ├── CelestialBody.cs   # Абстрактный базовый класс
@@ -75,9 +88,9 @@ CelestialBody (abstract)
 
 #### Инкапсуляция
 
-- Поле `mass` закрыто (`private`), доступ — через свойство `Mass`,
+- Поле `mass` закрыто (`private`), доступ через свойство `Mass`,
   которое проверяет корректность (`value <= 0` → `ArgumentException`).
-- У большинства свойств только `get` — состояние задаётся через конструктор.
+- У большинства свойств только `get`: состояние задаётся через конструктор.
 - `SpaceMission.Status` имеет `private set`: статус меняется только
   методами `Start()` и `Complete()`.
 
@@ -103,9 +116,7 @@ CelestialBody (abstract)
 - `Orbit` описывает орбитальные характеристики объекта
 - `SpaceMission` моделирует миссию между двумя объектами
 
-Диаграмма классов: `SpaceOOP_ClassDiagram.drawio` (открывается в draw.io).
-
-## Лабораторная 2 — обобщения (generics)
+## Лабораторная 2: обобщения (generics)
 
 Вторая лабораторная развивает ту же предметную область: добавлена
 собственная обобщённая коллекция и продемонстрирована вариативность
@@ -127,19 +138,22 @@ CelestialBody (abstract)
 
 ```
 lab2/
-├── Lab2.txt                        # Текст задания
-└── SpaceOOP2/
-    ├── Collections/                # Главное новое во 2-й работе
-    │   ├── SpaceCollection.cs      # Собственная обобщённая коллекция
-    │   ├── ISpaceReader.cs         # Ковариантный интерфейс (out T)
-    │   ├── ISpaceVisitor.cs        # Контравариантный интерфейс (in T)
-    │   ├── SpaceInfoPrinter.cs     # Реализация ISpaceVisitor<CelestialBody>
-    │   └── CelestialBodyComparer.cs # IComparer<CelestialBody> (in T)
-    ├── Models/                     # Иерархия космических тел (как в lab1)
-    ├── Systems/                    # Звёздная система, орбиты, миссия
-    ├── Services/                   # Каталог и расчёт расстояний
-    ├── Program.cs                  # Меню + демонстрации вариативности
-    └── description.txt             # Описание проекта и обобщений
+├── Lab2.txt                          # Текст задания
+├── SpaceOOP2_ClassDiagram.drawio     # Диаграмма классов (draw.io)
+├── SpaceOOP2/
+│   ├── Collections/                  # Главное новое во 2-й работе
+│   │   ├── SpaceCollection.cs        # Собственная обобщённая коллекция
+│   │   ├── ISpaceReader.cs           # Ковариантный интерфейс (out T)
+│   │   ├── ISpaceVisitor.cs          # Контравариантный интерфейс (in T)
+│   │   ├── SpaceInfoPrinter.cs       # Реализация ISpaceVisitor<CelestialBody>
+│   │   └── CelestialBodyComparer.cs  # IComparer<CelestialBody> (in T)
+│   ├── Models/                       # Иерархия космических тел (как в lab1)
+│   ├── Systems/                      # Звёздная система, орбиты, миссия
+│   ├── Services/                     # Каталог и расчёт расстояний
+│   ├── Program.cs                    # Меню + демонстрации вариативности
+│   └── description.txt               # Описание проекта и обобщений
+└── SpaceOOP2.Tests/                  # Тесты xUnit на SpaceCollection<T>
+    └── SpaceCollectionTests.cs       # Add/Remove/Clone/CopyTo/вариативность
 ```
 
 ### Как устроена SpaceCollection\<T\>
@@ -152,15 +166,38 @@ lab2/
 по составу (Add/Remove одной не влияют на другую), но ссылается на те же
 объекты тел.
 
-### Вариативность — в двух словах
+### Детали реализации StarSystem
 
-- **Ковариантность (`out T`)** — «от частного к общему»:
+- Свойство `Objects` возвращает защитную копию только для чтения
+  (`Array.AsReadOnly(bodies.ToArray())`): привести её обратно к
+  `SpaceCollection` и изменить систему снаружи нельзя.
+- `GetPlanets()` / `GetSatellites()` возвращают `SpaceCollection<T>`,
+  а `GetOrbits()` возвращает `List<Orbit>`: `Orbit` не является
+  космическим телом и не проходит ограничение `where T : CelestialBody`.
+
+### Тесты (SpaceOOP2.Tests)
+
+Проект xUnit со ссылкой на `SpaceOOP2`. Покрыто:
+
+- `Add` увеличивает `Count`, `Contains` находит добавленный элемент
+- `Remove`: `true` для существующего элемента, `false` для отсутствующего
+- индексатор и `RemoveAt` бросают `ArgumentOutOfRangeException`
+  при неверном индексе
+- рост внутреннего массива при добавлении большого числа элементов
+- `Clone`: после удаления из оригинала клон сохраняет прежний `Count`
+- `foreach` и `CopyTo` возвращают элементы в порядке добавления
+- ковариантность `ISpaceReader<out T>`: присваивание
+  `ISpaceReader<CelestialBody> = (ISpaceReader<Planet>)` и тот же `Count`
+
+### Вариативность: в двух словах
+
+- **Ковариантность (`out T`)**: «от частного к общему»:
   `ISpaceReader<Planet>` можно присвоить переменной
   `ISpaceReader<CelestialBody>`, потому что T только возвращается.
-- **Контравариантность (`in T`)** — «от общего к частному»:
+- **Контравариантность (`in T`)**: «от общего к частному»:
   `ISpaceVisitor<CelestialBody>` можно присвоить переменной
   `ISpaceVisitor<Planet>`, потому что T только принимается параметром.
 
-Подробные пояснения — в комментариях в коде (`Collections/` и
+Подробные пояснения: в комментариях в коде (`Collections/` и
 демо-методы `ShowCovarianceDemo` / `ShowContravarianceDemo` /
 `ShowComparerDemo` в `Program.cs`).
